@@ -1,38 +1,63 @@
 # GD Blueprint
 
-Keep project direction in `.gd-blueprint/PROJECT.md` and the single active task in
-`.gd-blueprint/TASK.md`. Read both before editing the Unity project.
+Read `.gd-blueprint/PROJECT.md` and `.gd-blueprint/TASK.md` before editing the
+Unity project.
+
+## Document ownership
+
+- `PROJECT.md` owns game direction, design findings, Unity context, architecture,
+  project conventions, release scope, and roadmap.
+- `TASK.md` owns the single active initiative, integration notes, and verification
+  evidence.
+- `references/INDEX.md` owns research and reference-media provenance.
+- `tasks/*.md` are temporary workstream records created only when parallel work helps.
+  The coordinator alone updates `TASK.md`, integrates shared assets, and closes the task.
+
+Follow the architecture and conventions recorded in `PROJECT.md`; existing project
+patterns take precedence over template defaults. Do not migrate an established project
+or introduce packages, analyzers, or scaffolding unless the task explicitly requires it.
 
 ## Task states
 
 `Idle -> In progress -> Ready to verify -> Done`
 
-- `$gd-build` scopes the request, implements it, verifies it, and offers to commit.
-- It asks before editing only when a missing decision would materially change the result.
-- Failed verification returns to `In progress`; an unavailable required check remains `Ready to verify`.
-- `$gd-build` also resumes interrupted implementation, verification, or a pending commit handoff.
-- Start another task from `Idle` or `Done`; abandoning unfinished work requires explicit direction about its changes.
+- `$gd-plan` updates project direction and decisions without editing the Unity project.
+- `$gd-build` scopes, implements, verifies, and offers to commit the active task.
+- Failed verification returns to `In progress`; an unavailable required check remains
+  `Ready to verify` and is a blocker.
+- Start new work from `Idle` or a handled `Done`. Abandon unfinished work only with
+  explicit direction about its changes.
+
+## Parallel work
+
+- Delegate only unblocked workstreams with disjoint write ownership.
+- Prefer independently playable or testable slices over architecture-layer splits.
+- Never assign concurrent edits to the same scene, prefab, material, ScriptableObject,
+  package manifest, project setting, or shared assembly definition.
+- Give every shared serialized asset one integration owner, and review merged serialized
+  diffs before verification.
 
 ## Unity safeguards
 
-- Keep each asset with its `.meta` file; preserve GUIDs when moving or replacing assets.
-- Prefer Unity-aware moves for scenes, prefabs, materials, animation, and other serialized assets.
-- Review serialized diffs for lost references, unexpected overrides, and broad reserialization.
+- Keep each asset with its `.meta` file and preserve GUIDs when moving or replacing it.
+- Prefer Unity-aware moves for scenes, prefabs, materials, animations, and other
+  serialized assets.
+- Review serialized diffs for lost references, unexpected overrides, and broad
+  reserialization.
 - Never edit generated folders such as `Library`, `Temp`, `Logs`, `obj`, or build output.
-- Keep runtime assemblies free of `UnityEditor`; place editor tooling in an `Editor` folder or editor-only assembly.
-- Match the project's existing Unity version, render pipeline, input system, packages, and code style.
+- Keep runtime assemblies free of `UnityEditor`; put editor tooling in an `Editor` folder
+  or editor-only assembly.
+- Match the project's pinned Unity version, packages, render pipeline, input system,
+  supported C# features, and code style.
 
-## Evidence
+## Evidence and Git
 
-Use the checks that fit the change: Unity compilation, EditMode or PlayMode tests,
-a player build, serialized asset inspection, and a focused manual play check. Record
-what actually ran under Verification in `.gd-blueprint/TASK.md`. Mark irrelevant checks
-`N/A` with a reason. A required but unavailable check is a blocker, not a pass or failure.
+Use checks appropriate to the change: Unity compilation, EditMode or PlayMode tests, a
+player build, serialized-asset inspection, and a focused manual play check. Record what
+actually ran in `TASK.md`; mark irrelevant checks `N/A` with a reason. A required but
+unavailable check is not a pass.
 
-## Git
-
-After `$gd-build` moves a task to `Done`, inspect staged and unstaged changes, summarize
-the exact scope, and propose a concise commit message. Commit only after commit-specific
-approval for the current task, including approval given in advance. Stage only task
-changes. If unrelated changes are already staged or cannot be isolated, stop without
-altering the existing staging area.
+After `Done`, inspect staged and unstaged changes, summarize the exact scope, and propose
+a concise commit message. Commit only with commit-specific approval for the current
+task. Stage only task changes; if unrelated staged changes or overlaps prevent safe
+isolation, leave the index untouched and stop.

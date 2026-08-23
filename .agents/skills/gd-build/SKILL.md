@@ -1,12 +1,25 @@
 ---
 name: gd-build
-description: Scope, diagnose, implement, and verify a Unity change, resume interrupted work, and offer to commit the result.
+description: Scope, diagnose, implement, coordinate, and verify Unity work, resume interrupted tasks, and offer to commit the result.
 ---
 
 # Build the task
 
 Read `.gd-blueprint/PROJECT.md`, `.gd-blueprint/TASK.md`, relevant project files, and
-Git state.
+Git state. Treat the architecture decision and project conventions in `PROJECT.md` as
+constraints. Do not silently choose, replace, or migrate an architecture. Production
+work on a greenfield project requires architecture status `Selected` or `Declined`; a
+`Prototyping` project may run only the recorded disposable scout, and unresolved
+greenfield production returns to `$gd-plan` for a developer decision. For an established
+project whose status has not been recorded yet, follow the architecture and conventions
+observed in the repository without imposing a preset or incidental migration.
+
+Load detailed guidance only when it applies:
+
+- Before changing or reviewing Unity/C# code, serialized assets, packages, or project
+  settings, read [Unity and C# development rules](references/unity-csharp.md).
+- Before splitting, delegating, or integrating parallel work, read
+  [Parallel work and integration](references/parallel-work.md).
 
 For new work, start from `Idle` or a handled `Done` task. Do not replace uncommitted
 `Done` work unless the developer explicitly carries it forward and it is recorded in
@@ -15,8 +28,9 @@ Notes. Abandon unfinished work only with explicit direction about its existing c
 Before editing, clarify only missing decisions that would materially change the result.
 Then replace the task with one goal, its exact roadmap item or `None`, boundaries,
 expected behavior, a short implementation checklist, relevant verification checks, and
-useful assumptions. For a bug, record the observed symptom and reproduction without
-assuming a cause. Set the state to `In progress`.
+useful assumptions. Use only `TASK.md` unless parallel work materially helps. For a bug,
+record the observed symptom and reproduction without assuming a cause. Set the state to
+`In progress`.
 
 When a failure's cause is uncertain, inspect the available evidence and separate
 observations from hypotheses before editing. Identify the smallest supported cause and
@@ -40,3 +54,7 @@ and propose a concise message. Commit only after commit-specific approval for th
 including approval given in advance. Stage only task changes. If the index already has
 unrelated changes, changes overlap, or the task cannot be isolated safely, stop without
 altering the existing staging area. If no task changes remain, report that no commit is needed.
+
+After completing a prototype scout, record its evidence in `TASK.md` and route the
+developer back to `$gd-plan` to update the scout decision, architecture status, and
+dependent roadmap. Do not treat prototype completion as production approval.
