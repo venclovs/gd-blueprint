@@ -1,0 +1,32 @@
+{
+  "name": "gd-blueprint",
+  "version": "1.0.0",
+  "description": "A small, file-based workflow for solo Unity projects.",
+  "bin": {
+    "gd-blueprint": "bin/gd-blueprint.js"
+  },
+  "files": [
+    ".agents",
+    ".gd-blueprint",
+    "AGENTS.md",
+    "bin"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/venclovs/gd-blueprint.git"
+  },
+  "keywords": [
+    "unity",
+    "game-development",
+    "workflow",
+    "planning"
+  ],
+  "author": "venclovs",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT"
+}
