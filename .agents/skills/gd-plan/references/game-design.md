@@ -33,12 +33,15 @@ planning does not install the Editor, create the project, or add packages.
 
 ## Run focused research
 
-For a new game, run a short, cited research pass using at most three useful comparable
-games or technical precedents. Choose sources that can resolve an open decision or
-expose a risk rather than producing a generic market survey. If the developer opts out
-or research access is unavailable, record the resulting uncertainty instead of inventing
-findings. For an established game, research only when a new decision needs it. Prefer
-primary, current sources for technical claims; distinguish source facts from inferences.
+For a new game, first decide whether external evidence would resolve an open decision or
+expose a meaningful risk. If so, run a short, cited research pass using at most three
+useful comparable games or technical precedents. If the concept is already bounded and
+has no research-dependent decision, record `No research needed` with a short reason
+instead of manufacturing a comparison. If the developer opts out or research access is
+unavailable when evidence is needed, record the resulting uncertainty instead of
+inventing findings. For an established game, research only when a new decision needs it.
+Prefer primary, current sources for technical claims; distinguish source facts from
+inferences.
 
 For each comparable or precedent, capture the question it informs, the applicable
 lesson, and the resulting project decision or remaining uncertainty. Summarize those
@@ -60,11 +63,19 @@ committing and judge candidate ideas by fun, appeal, and achievable scope.
 
 Each scout records:
 
+- A stable scout ID that later tasks and findings can reference.
 - One question or falsifiable hypothesis.
 - The cheapest useful prototype, research check, or playtest.
 - How the result will be evaluated.
 - The observed result, or `Pending` when it has not run.
 - A `Keep`, `Revise`, or `Discard` decision after evidence exists.
+- The prototype artifact disposition: `Removed` restores or deletes every scout-only
+  Unity-project change; `Isolated` retains executable artifacts only with a recorded,
+  verifiable compilation and build exclusion and no production references;
+  `Evidence only` retains notes, captures, or reference media but no executable Unity
+  artifact.
+  If isolation cannot be enforced and checked, leave the disposition pending until the
+  developer chooses `Removed` or `Evidence only`.
 
 When gameplay and presentation answer different questions, scout them separately.
 Prototype code is disposable evidence, not a production foundation or an implicit
@@ -81,14 +92,17 @@ and let the developer choose:
    for small, mechanics-first games.
 2. **ScriptableObject-driven modules** — ScriptableObjects define configuration,
    content, event channels, or runtime sets where inspector composition and reuse are
-   valuable. Mutable runtime state stays separate from saved configuration. See
+   valuable. Mutable runtime state stays separate from saved configuration. Runtime-set
+   assets are allowed only as explicitly reset session containers whose play-mode state
+   cannot become authored content. See
    [Unity's modular architecture guidance](https://unity.com/how-to/architect-game-code-scriptable-objects).
 3. **Layered domain core** — pure C# game rules behind explicit boundaries, with thin
    Unity adapters and assembly definitions separating runtime, editor, and tests. Prefer
    it for systems-heavy strategy or simulation and games needing extensive automated
    tests.
-4. **None / no imposed preset** — deliberately impose no preset; in an existing project,
-   follow the established shape.
+4. **None / no imposed preset** — deliberately impose no preset. Existing projects
+   follow their established shape; greenfield work uses only the minimum task-local
+   Unity structure needed and does not turn it into a global framework by default.
 
 Explain the recommendation using the game's size, content volume, system complexity,
 testing needs, and team or agent workflow. Do not silently select, combine, scaffold, or

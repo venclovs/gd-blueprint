@@ -11,7 +11,9 @@ Unity project.
   evidence.
 - `references/INDEX.md` owns research and reference-media provenance.
 - `tasks/*.md` are temporary workstream records created only when parallel work helps.
-  The coordinator alone updates `TASK.md`, integrates shared assets, and closes the task.
+  The coordinator alone updates `TASK.md`, edits and integrates shared assets or
+  project-wide configuration, and removes the workstream records after consolidating
+  their evidence and before closing the task.
 
 Follow the architecture and conventions recorded in `PROJECT.md`; existing project
 patterns take precedence over template defaults. Do not migrate an established project
@@ -34,8 +36,8 @@ or introduce packages, analyzers, or scaffolding unless the task explicitly requ
 - Prefer independently playable or testable slices over architecture-layer splits.
 - Never assign concurrent edits to the same scene, prefab, material, ScriptableObject,
   package manifest, project setting, or shared assembly definition.
-- Give every shared serialized asset one integration owner, and review merged serialized
-  diffs before verification.
+- Keep shared serialized assets and project-wide configuration coordinator-owned, and
+  review their diffs before verification.
 
 ## Unity safeguards
 

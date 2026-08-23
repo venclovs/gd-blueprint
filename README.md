@@ -82,15 +82,16 @@ production work starts. It records:
 - Moment-to-moment, session, and progression loops.
 - Release scope, observable quality targets, and a short value- and risk-ordered roadmap.
 
-Research is focused rather than exhaustive: up to three useful comparable games or
-technical precedents, cited in the reference index. The workflow uses lightweight
+When evidence can resolve an open decision or risk, research is focused rather than
+exhaustive: up to three useful comparable games or technical precedents, cited in the
+reference index. A bounded microgame need not manufacture comparisons. The workflow uses
 [Jonas Tyroller-inspired design-search heuristics](https://www.youtube.com/watch?v=o5K0uqhxgsE):
 explore before committing, judge ideas by fun, appeal, and scope, and separate gameplay
 and presentation experiments when they answer different questions.
 
 High-risk assumptions can become small prototype **scouts**. Each scout states the
-question, cheapest useful check, evaluation method, result, and a keep, revise, or
-discard decision. Prototype code is disposable and does not establish production
+stable ID, question, cheapest useful check, evaluation method, result, decision, and
+artifact disposition. Prototype code is disposable and does not establish production
 architecture. After `$gd-build` runs a scout, `$gd-plan` records its result and any
 resulting architecture or roadmap decision.
 
@@ -110,8 +111,9 @@ options plus an explicit opt-out. The developer makes the final choice:
    saved configuration. See [Unity's modular architecture guidance](https://unity.com/how-to/architect-game-code-scriptable-objects).
 3. **Layered domain core** — pure C# game rules behind thin Unity adapters and assembly
    boundaries, suited to strategy, simulation, and systems needing extensive tests.
-4. **None / no imposed preset** — impose no new architecture; existing projects keep
-   their established conventions.
+4. **None / no imposed preset** — impose no new architecture. Existing projects keep
+   their conventions; greenfield tasks use only the minimum local Unity structure they
+   need, without creating a general framework.
 
 `$gd-build` follows the recorded decision. Changing an established architecture is a
 separate explicit planning decision, not an automatic cleanup.
@@ -121,14 +123,17 @@ separate explicit planning decision, not an automatic cleanup.
 Small and normal-sized changes stay entirely in `TASK.md`. When a larger initiative has
 truly independent slices, `$gd-build` may create
 `.gd-blueprint/tasks/<id>-<slug>.md` workstream files on demand. Each records blockers,
-owned and no-touch paths, acceptance criteria, and verification.
+owned and no-touch paths, acceptance criteria, and verification. They are temporary:
+the coordinator consolidates durable evidence into `TASK.md` and removes them before the
+completed-task commit handoff.
 
 Ready workstreams can be delegated to agents in parallel only when their write scopes
 do not overlap. One coordinator owns `TASK.md`, integration, and final project-wide
-verification. Scenes, prefabs, materials, ScriptableObjects, package manifests, project
-settings, and shared assembly definitions always have a single integration owner rather
-than concurrent editors. Workstreams favor playable or testable vertical slices and use
-dependency-aware sequencing inspired by [Matt Pocock's ticket workflow](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-tickets).
+verification. The coordinator also owns shared scenes, prefabs, materials,
+ScriptableObjects, package manifests, project settings, and shared assembly definitions;
+workstream agents treat them as read-only. Workstreams favor playable or testable
+vertical slices and use dependency-aware sequencing inspired by
+[Matt Pocock's ticket workflow](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-tickets).
 
 ## Unity and C# compatibility
 

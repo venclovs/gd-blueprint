@@ -7,18 +7,15 @@ changes them.
 
 ## Architecture
 
-- When an established project's status is still `Unresolved`, preserve the architecture
-  and conventions observed in the repository; do not impose a preset or edit `PROJECT.md`
-  as an incidental build step.
 - For `Selected` or `Existing`, preserve the recorded approach, dependency direction,
   boundaries, and runtime-state ownership. Put new behavior in the responsible layer or
   module; record a necessary deviation instead of quietly eroding the architecture.
-- For `Declined`, follow the repository's established structure without introducing a
-  framework. Do not add architecture packages or runtime scaffolding unless requested.
+- For `Declined`, follow an established repository's structure without introducing a
+  framework. In greenfield work, use the smallest task-local Unity structure needed;
+  do not promote it into a cross-task convention, add architecture packages, or create
+  general runtime scaffolding. Route a durable structural decision through `$gd-plan`.
 - For `Prototyping`, keep scout code cheap, isolated, and disposable. Prototype choices
   do not establish production architecture.
-- Do not migrate an existing project or revise the architecture decision as an incidental
-  part of a feature or fix. Route a material architecture change through `$gd-plan`.
 
 ## Version and API truth
 
@@ -41,8 +38,6 @@ changes them.
 
 ## Implementation defaults
 
-- Keep runtime assemblies free of `UnityEditor`; put editor tooling in an `Editor` folder
-  or editor-only assembly.
 - Prefer explicit serialized dependencies, narrow public APIs, small components, and plain
   C# game rules that can be tested without a scene where practical.
 - Pair event subscription and unsubscription in compatible lifecycle methods. Avoid
@@ -52,11 +47,22 @@ changes them.
 - Avoid unnecessary allocations, reflection, logging, object lookup, and component lookup
   in hot update paths. Optimize demonstrated or structurally obvious hot paths rather than
   broadly obscuring code.
-- Preserve asset GUIDs and `.meta` files. Use Unity-aware operations for scenes, prefabs,
-  materials, animation, ScriptableObjects, and other serialized assets; inspect their
-  diffs for lost references, unexpected overrides, and broad reserialization.
-- Never edit generated directories such as `Library`, `Temp`, `Logs`, `obj`, or build
-  output.
+
+## Prototype scout cleanup
+
+- Follow the artifact disposition recorded for the scout. Never change it or delete an
+  artifact chosen for retention without developer approval.
+- For `Removed`, restore scout-only edits to existing files and delete scout-only
+  artifacts, including their serialized references and `.meta` files, without touching
+  unrelated changes.
+- For `Isolated`, keep executable artifacts only with a recorded, verifiable compilation
+  and build exclusion and no production references; a folder name alone is not an
+  exclusion.
+- For `Evidence only`, keep notes, captures, or reference media but no executable Unity
+  artifact.
+- Check the resulting diff, serialization, and compilation as applicable. If a required
+  isolation check is unavailable, remain `Ready to verify` as for any other blocked
+  check.
 
 ## Tooling and verification
 

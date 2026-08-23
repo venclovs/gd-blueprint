@@ -1,7 +1,7 @@
 {
   "name": "gd-blueprint",
-  "version": "1.0.0",
-  "description": "A small, file-based workflow for solo Unity projects.",
+  "version": "1.1.0",
+  "description": "A file-based design-to-delivery workflow for solo Unity projects and AI agents.",
   "bin": {
     "gd-blueprint": "bin/gd-blueprint.js"
   },

@@ -41,11 +41,19 @@
 
 ## Design risks and scouts
 
+### Risks
+
+Use `Open`, `Accepted`, `Deferred`, or `Resolved` and record the response or next check.
+
+-
+
+### Scouts
+
 Record a scout only when a risky assumption needs a cheap prototype or focused research.
 
-| Question or hypothesis | Cheapest useful check | Evaluation | Result | Decision |
-| --- | --- | --- | --- | --- |
-|  |  |  |  |  |
+| Scout ID | Question or hypothesis | Cheapest useful check | Evaluation | Result | Decision | Artifact disposition |
+| --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |
 
 ## Release scope
 
@@ -96,7 +104,9 @@ Record only project-specific rules that override or extend the defaults in `$gd-
 
 ## Decisions and unknowns
 
+- Observation:
 - Decision:
+- Assumption:
 - Unknown:
 
 ## References

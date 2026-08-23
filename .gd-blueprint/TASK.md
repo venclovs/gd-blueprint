@@ -42,8 +42,8 @@ about its existing changes.
 ## Workstreams
 
 Create `.gd-blueprint/tasks/<id>-<slug>.md` only when parallel work materially helps.
-The coordinator owns this index and assigns every shared Unity asset to one integration
-owner.
+The coordinator owns this index, every shared Unity asset, and project-wide
+configuration.
 
 | Workstream | State | Blocked by | Owner | Integration notes |
 | --- | --- | --- | --- | --- |
