@@ -5,18 +5,19 @@ Unity project.
 
 ## Document ownership
 
-- `PROJECT.md` owns game direction, design findings, Unity context, architecture,
-  project conventions, release scope, and roadmap.
-- `TASK.md` owns the single active initiative, integration notes, and verification
-  evidence.
-- `references/INDEX.md` owns research and reference-media provenance.
-- `tasks/*.md` are temporary workstream records created only when parallel work helps.
-  The coordinator removes them after consolidating their evidence and before closing the
-  task.
+- `.gd-blueprint/PROJECT.md` owns game direction, design findings, Unity context,
+  architecture, project conventions, release scope, and roadmap.
+- `.gd-blueprint/TASK.md` owns the single active initiative, integration notes, and
+  verification evidence.
+- `.gd-blueprint/references/INDEX.md` owns research and reference-media provenance.
+- `.gd-blueprint/tasks/*.md` are temporary workstream records created only when parallel
+  work helps. The coordinator removes them after consolidating their evidence and before
+  closing the task.
 
-Follow the architecture and conventions recorded in `PROJECT.md`; existing project
-patterns take precedence over template defaults. Do not migrate an established project
-or introduce packages, analyzers, or scaffolding unless the task explicitly requires it.
+Follow the architecture and conventions recorded in `.gd-blueprint/PROJECT.md`;
+existing project patterns take precedence over template defaults. Do not migrate an
+established project or introduce packages, analyzers, or scaffolding unless the task
+explicitly requires it.
 
 ## Task states
 
@@ -31,8 +32,8 @@ or introduce packages, analyzers, or scaffolding unless the task explicitly requ
 
 ## Parallel work
 
-- Only the coordinator updates `TASK.md`, shared paths, integration state, or the final
-  initiative state.
+- Only the coordinator updates `.gd-blueprint/TASK.md`, shared paths, integration state,
+  or the final initiative state.
 - Delegate only unblocked workstreams with disjoint write ownership.
 - Prefer independently playable or testable slices over architecture-layer splits.
 - Never assign concurrent edits to the same scene, prefab, material, ScriptableObject,
@@ -61,10 +62,12 @@ or introduce packages, analyzers, or scaffolding unless the task explicitly requ
 
 Use checks appropriate to the change: Unity compilation, EditMode or PlayMode tests, a
 player build, serialized-asset inspection, and a focused manual play check. Record what
-actually ran in `TASK.md`; mark irrelevant checks `N/A` with a reason. A required but
-unavailable check is not a pass.
+actually ran in `.gd-blueprint/TASK.md`; mark irrelevant checks `N/A` with a reason. A
+required but unavailable check is not a pass.
 
-After `Done`, inspect staged and unstaged changes, summarize the exact scope, and propose
-a concise commit message. Leave the index untouched until commit-specific approval for
-the current task, then stage only its final scope. If unrelated staged changes or
-overlaps prevent safe isolation, leave the index untouched and stop.
+For a scout, reconcile `.gd-blueprint/PROJECT.md` and retained-evidence provenance
+through `$gd-plan` before the commit handoff. After `Done`, inspect staged and unstaged
+changes, summarize the exact scope, and propose a concise commit message. Leave the index
+untouched until commit-specific approval for the current task, then stage only its final
+scope. If unrelated staged changes or overlaps prevent safe isolation, leave the index
+untouched and stop.

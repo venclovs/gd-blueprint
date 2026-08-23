@@ -93,7 +93,8 @@ High-risk assumptions can become small prototype **scouts**. Each scout states t
 stable ID, question, cheapest useful check, evaluation method, result, decision, and
 artifact disposition. Prototype code is disposable and does not establish production
 architecture. After `$gd-build` runs a scout, `$gd-plan` records its result and any
-resulting architecture or roadmap decision.
+resulting architecture or roadmap decision. The combined commit handoff follows that
+reconciliation so evidence, provenance, and the resulting decision stay together.
 
 Existing projects take a lighter path: `$gd-plan` inspects and records their current
 Unity setup, architecture, and conventions without forcing migration.

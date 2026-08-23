@@ -30,6 +30,12 @@ install tooling, scaffold an architecture, or edit the Unity project. Do not app
 planning change that invalidates an unfinished task's roadmap item, scope, or acceptance
 basis; leave it pending until `$gd-build` reconciles that task and its changes.
 
+When `TASK.md` is a `Done` scout awaiting planning reconciliation, record its result and
+developer decision or remaining unknown in `PROJECT.md`, update architecture and roadmap
+dependencies, and add `INDEX.md` provenance for retained evidence when applicable. Then
+return to `$gd-build` at `Done` for the combined scout commit handoff; do not start a
+separate commit.
+
 Close with a readiness summary: the proposed release slice, architecture status, every
 non-resolved risk and its affected work, roadmap dependencies, and the next unresolved
 decision or scout. Call the game ready for production only when its release slice and

@@ -37,9 +37,11 @@ record the observed symptom and reproduction without assuming a cause. Set the s
 `In progress`.
 
 When a failure's cause is uncertain, inspect the available evidence and separate
-observations from hypotheses before editing. Identify the smallest supported cause and
-record useful findings in Notes. Do not make a speculative fix. If essential evidence is
-unavailable, record what is missing and stop.
+observations from hypotheses. If needed, make the smallest reversible diagnostic edit,
+such as a focused failing test or temporary instrumentation, and record it in scope.
+Remove temporary instrumentation before verification. Implement a production fix only
+after the evidence supports a cause; if essential evidence cannot be obtained, record
+what is missing and stop.
 
 For `In progress`, reconcile the project and diff with the checklist, implement the
 remaining work, and set `Ready to verify`. For `Ready to verify`, compare the result with
@@ -55,14 +57,19 @@ named roadmap item complete only when the task fully completes it.
 
 For a prototype scout, name its stable scout ID and recorded artifact disposition in the
 task, and record the owned paths and baseline before editing. Execute it only when the
-scout is approved to run and its disposition is not `Pending`. Before `Ready to verify`,
-apply the disposition and record its evidence in `TASK.md`. After `Done`, route the
-developer back to `$gd-plan` to update the scout decision, architecture status, and
-dependent roadmap. Do not treat prototype completion as production approval.
+scout is approved to run and its disposition is not `Pending`. During `In progress`,
+execute and evaluate it, then capture the result before applying its disposition. Use
+`Ready to verify` to check the recorded evidence and cleanup integrity, not to rerun a
+removed prototype. After `Done`, defer the commit handoff and route the developer back
+to `$gd-plan` to reconcile the result, scout decision, architecture, roadmap, and
+retained-evidence provenance. Then resume `$gd-build` at `Done`; treat the task record,
+planning reconciliation, and permitted evidence media as one final scout commit scope.
+Do not treat prototype completion as production approval.
 
-After `Done`, inspect both staged and unstaged changes, summarize the exact commit scope,
-and propose a concise message. Leave the index untouched until commit-specific approval
-for this task, including approval given in advance. After approval, stage only the final
-task scope and commit it. If the index already has unrelated changes, changes overlap,
-or the task cannot be isolated safely, stop without altering the existing staging area.
-If no task changes remain, report that no commit is needed.
+After `Done`, and after any required scout reconciliation, inspect both staged and
+unstaged changes, summarize the exact commit scope, and propose a concise message. Leave
+the index untouched until commit-specific approval for this task, including approval
+given in advance. After approval, stage only the final task scope and commit it. If the
+index already has unrelated changes, changes overlap, or the task cannot be isolated
+safely, stop without altering the existing staging area. If no task changes remain,
+report that no commit is needed.
