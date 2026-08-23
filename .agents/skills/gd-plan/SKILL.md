@@ -2,7 +2,7 @@
 name: gd-plan
 description: Define or refresh the game's direction, Unity context, release scope, and short roadmap.
 ---
-
+/
 # Plan the game
 
 Read `.gd-blueprint/PROJECT.md` and `.gd-blueprint/TASK.md`. Work only in `PROJECT.md`.
