@@ -46,15 +46,17 @@ deliberate.
 
 ### Risks
 
-For each risk, name affected roadmap work or `Release readiness`, then use:
+Use a stable ID and this one-line format for each risk:
+
+`RISK-{id} — {status} — {risk}; affects: {roadmap work or Release readiness}; response/next check: {action}`
+
+Status meanings:
 
 - `Open`: unresolved and blocking the affected work.
 - `Accepted`: the developer explicitly accepts the exposure and may proceed.
 - `Deferred`: not relevant until a named trigger or later roadmap item; reclassify it
   when that trigger arrives.
 - `Resolved`: evidence or a decision closed it.
-
-Record the response or next check.
 
 -
 
@@ -64,6 +66,7 @@ Use this block only when a risky assumption needs a cheap prototype or focused r
 
 #### SCOUT-{id} — Question or hypothesis
 
+- Related risk: `RISK-{id}` or `None`
 - Blocks: Roadmap item or `Release readiness`
 - Approved to run: `No`
 - Cheapest useful check:
@@ -84,6 +87,8 @@ Use this block only when a risky assumption needs a cheap prototype or focused r
 
 ## Unity technical snapshot
 
+- Project state: `Unresolved` (`Unresolved`, `Not created`, or `Created`)
+- Dimensionality: `Unresolved` (`Unresolved`, `2D`, `3D`, or `Hybrid`)
 - Editor version:
 - Render pipeline:
 - Input system:

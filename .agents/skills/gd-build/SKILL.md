@@ -43,6 +43,14 @@ Remove temporary instrumentation before verification. Implement a production fix
 after the evidence supports a cause; if essential evidence cannot be obtained, record
 what is missing and stop.
 
+If the task creates the Unity project or changes facts recorded under `Unity technical
+snapshot` in `PROJECT.md`, refresh only the affected observed fields before
+`Ready to verify`. Treat existing non-`Unresolved` values as constraints: change them
+only when the task explicitly includes that change or the observed result matches the
+recorded baseline. An unapproved mismatch returns to `In progress` instead of overwriting
+the plan. Do not use a factual update to revise game design, architecture, release scope,
+or roadmap decisions.
+
 For `In progress`, reconcile the project and diff with the checklist, implement the
 remaining work, and set `Ready to verify`. For `Ready to verify`, compare the result with
 the boundaries and expected behavior, then complete the Verification checklist. For

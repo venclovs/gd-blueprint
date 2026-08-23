@@ -31,10 +31,12 @@ planning change that invalidates an unfinished task's roadmap item, scope, or ac
 basis; leave it pending until `$gd-build` reconciles that task and its changes.
 
 When `TASK.md` is a `Done` scout awaiting planning reconciliation, record its result and
-developer decision or remaining unknown in `PROJECT.md`, update architecture and roadmap
-dependencies, and add `INDEX.md` provenance for retained evidence when applicable. Then
-return to `$gd-build` at `Done` for the combined scout commit handoff; do not start a
-separate commit.
+developer decision or remaining unknown in `PROJECT.md`. Mark a related risk `Resolved`
+only when evidence or the decision closes it; otherwise keep it `Open` with its next
+check unless the developer explicitly accepts it or its recorded deferral applies.
+Update architecture and roadmap dependencies, and add `INDEX.md` provenance for retained
+evidence when applicable. Then return to `$gd-build` at `Done` for the combined scout
+commit handoff; do not start a separate commit.
 
 Close with a readiness summary: the proposed release slice, architecture status, every
 non-resolved risk and its affected work, roadmap dependencies, and the next unresolved

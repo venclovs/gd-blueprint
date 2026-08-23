@@ -83,6 +83,7 @@ from stale task metadata.
 - Only the coordinator may move the initiative from `Ready to verify` to `Done` and begin
   the commit handoff described by the main skill.
 - Retain workstream files while the initiative is unfinished. After the initiative-level
-  checks pass, copy durable ownership, handoff, and verification evidence into `TASK.md`,
-  remove that initiative's workstream files, and only then mark `Done` and begin the
-  commit handoff. Do not carry temporary workstream files into the completed-task commit.
+  checks pass, copy durable baselines and preservation decisions, ownership, handoff, and
+  verification evidence into `TASK.md`, remove that initiative's workstream files, and
+  only then mark `Done` and begin the commit handoff. Do not carry temporary workstream
+  files into the completed-task commit.

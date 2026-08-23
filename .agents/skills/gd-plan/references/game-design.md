@@ -55,6 +55,7 @@ Each scout records:
 
 - A stable scout ID that later tasks and findings can reference.
 - One question or falsifiable hypothesis.
+- The related risk ID, or `None` when there is no separate risk record.
 - The roadmap work or release-readiness decision it blocks.
 - Whether the developer approved it to run.
 - The cheapest useful prototype, research check, or playtest.
