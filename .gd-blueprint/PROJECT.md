@@ -1,5 +1,8 @@
 # Project
 
+Blank decision-bearing fields are unresolved. Write `None` or `N/A` when absence is
+deliberate.
+
 ## Game vision
 
 - Working title:
@@ -43,17 +46,31 @@
 
 ### Risks
 
-Use `Open`, `Accepted`, `Deferred`, or `Resolved` and record the response or next check.
+For each risk, name affected roadmap work or `Release readiness`, then use:
+
+- `Open`: unresolved and blocking the affected work.
+- `Accepted`: the developer explicitly accepts the exposure and may proceed.
+- `Deferred`: not relevant until a named trigger or later roadmap item; reclassify it
+  when that trigger arrives.
+- `Resolved`: evidence or a decision closed it.
+
+Record the response or next check.
 
 -
 
 ### Scouts
 
-Record a scout only when a risky assumption needs a cheap prototype or focused research.
+Use this block only when a risky assumption needs a cheap prototype or focused research.
 
-| Scout ID | Question or hypothesis | Cheapest useful check | Evaluation | Result | Decision | Artifact disposition |
-| --- | --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  |  |  |
+#### SCOUT-{id} — Question or hypothesis
+
+- Blocks: Roadmap item or `Release readiness`
+- Approved to run: `No`
+- Cheapest useful check:
+- Evaluation:
+- Result: `Pending`
+- Decision: `Pending` (`Keep`, `Revise`, or `Discard`)
+- Artifact disposition: `Pending` (`Removed` or `Evidence only`)
 
 ## Release scope
 

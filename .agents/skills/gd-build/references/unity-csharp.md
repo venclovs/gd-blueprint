@@ -29,10 +29,8 @@ changes them.
   installed source when public versioned documentation is insufficient.
 - Keep existing projects pinned. For a new project, use the LTS version selected and
   recorded by `$gd-plan`; if none is selected, get that decision before scaffolding.
-- Match the C# language/compiler support of the selected Editor. Unity 6.0, for example,
-  documents C# 9 with listed limitations; later language features require evidence from
-  the project's actual Editor/toolchain. See Unity's
-  [C# compiler documentation](https://docs.unity3d.com/6000.0/Documentation/Manual/csharp-compiler.html).
+- Match the C# language and compiler support demonstrated by the selected Editor and its
+  toolchain; do not infer support from a newer Editor's documentation.
 - Do not upgrade the Editor, packages, render pipeline, input system, or API compatibility
   level unless the task explicitly includes the upgrade.
 
@@ -55,22 +53,14 @@ changes them.
 - For `Removed`, restore scout-only edits to existing files and delete scout-only
   artifacts, including their serialized references and `.meta` files, without touching
   unrelated changes.
-- For `Isolated`, keep executable artifacts only with a recorded, verifiable compilation
-  and build exclusion and no production references; a folder name alone is not an
-  exclusion.
-- For `Evidence only`, keep notes, captures, or reference media but no executable Unity
-  artifact.
-- Check the resulting diff, serialization, and compilation as applicable. If a required
-  isolation check is unavailable, remain `Ready to verify` as for any other blocked
-  check.
+- For `Evidence only`, apply the same cleanup but retain non-executable captures or
+  reference media in addition to the scout record.
+- Check the resulting diff, serialization, and compilation as applicable.
 
-## Tooling and verification
+## Tooling
 
 - Detect whether a live Unity Editor connection, official Unity skills, or a project CLI
   is already available and use it when it is the safest applicable path. Do not install,
   enable, update, or reconfigure optional tooling without developer authorization.
 - Retain filesystem inspection and the project's existing Unity batch-mode, test, and
   build routes as fallbacks.
-- Choose checks proportional to the change: compilation, focused EditMode or PlayMode
-  tests, player build, serialized-diff review, and a focused manual play check. Record
-  only what actually ran; an unavailable required check remains a blocker.

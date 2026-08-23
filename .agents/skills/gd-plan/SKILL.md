@@ -26,15 +26,16 @@ a redesign, migration, newer Unity version, or architecture change.
 Planning changes only `.gd-blueprint` planning artifacts: `PROJECT.md` and, when
 research or visual references are used, `.gd-blueprint/references/INDEX.md` plus
 permitted reference media beside it. Do not edit `TASK.md`, create implementation tasks,
-install tooling, scaffold an architecture, or edit the Unity project. Do not silently
-change assumptions used by an unfinished task. Preserve its linked roadmap item, scope
-assumptions, and acceptance basis; if planning would invalidate one, record the proposal
-as pending and ask the developer how to handle the conflict. If the developer chooses
-the incompatible plan, do not apply it until `$gd-build` has reconciled the unfinished
-task and its changes; resume planning after `TASK.md` no longer depends on the old plan.
+install tooling, scaffold an architecture, or edit the Unity project. Do not apply a
+planning change that invalidates an unfinished task's roadmap item, scope, or acceptance
+basis; leave it pending until `$gd-build` reconciles that task and its changes.
 
-Close with a readiness summary: the proposed release slice, architecture status,
-accepted or deferred risks, roadmap dependencies, and the next unresolved decision or
-scout. Call the game ready for production only when the release slice is bounded, the
-architecture is `Selected`, `Existing`, or deliberately `Declined`, and no unaccepted
-risk blocks the first roadmap item.
+Close with a readiness summary: the proposed release slice, architecture status, every
+non-resolved risk and its affected work, roadmap dependencies, and the next unresolved
+decision or scout. Call the game ready for production only when its release slice and
+required quality targets are bounded, prerequisites for the first production roadmap
+item are decided, architecture is `Selected`, `Existing`, or deliberately `Declined`,
+and no `Open` risk or pending scout blocks either `Release readiness` or that item. If a
+scout must run first, report `Ready to scout` only when it is approved, its artifact
+disposition is selected, and its prerequisites are decided; otherwise report the
+specific unresolved decision. Do not call either state ready for production.

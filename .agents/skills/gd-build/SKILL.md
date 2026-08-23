@@ -23,13 +23,11 @@ Load detailed guidance only when it applies:
 - Before splitting, delegating, or integrating parallel work, read
   [Parallel work and integration](references/parallel-work.md).
 
-For new work, start from `Idle` or a handled `Done` task. Do not replace uncommitted
-`Done` work unless the developer explicitly carries it forward and it is recorded in
-Notes. Abandon unfinished work only with explicit direction about its existing changes.
-When explicitly abandoning it, return `TASK.md` to `Idle` only after its changes are
-reverted or the developer accepts them as an out-of-task baseline. When rescoping it,
-replace the task only after recording which changes carry forward. Otherwise keep it
-`In progress` and stop. Never discard or orphan changes implicitly.
+For new work, start from `Idle` or a handled `Done` task. Do not replace an unfinished
+task or its uncommitted `Done` work until the developer approves each prior-task change
+as reverted, accepted baseline, or carried forward. Complete approved reversions first;
+record accepted-baseline and carried-forward paths in Notes, and retain baseline records
+in later tasks until those changes are handled.
 
 Before editing, clarify only missing decisions that would materially change the result.
 Then replace the task with one goal, its exact roadmap item or `None`, boundaries,
@@ -56,13 +54,15 @@ verifying again. If a required check is unavailable, record the blocker, remain
 named roadmap item complete only when the task fully completes it.
 
 For a prototype scout, name its stable scout ID and recorded artifact disposition in the
-task, and record the owned paths and baseline before editing. Before `Ready to verify`,
+task, and record the owned paths and baseline before editing. Execute it only when the
+scout is approved to run and its disposition is not `Pending`. Before `Ready to verify`,
 apply the disposition and record its evidence in `TASK.md`. After `Done`, route the
 developer back to `$gd-plan` to update the scout decision, architecture status, and
 dependent roadmap. Do not treat prototype completion as production approval.
 
 After `Done`, inspect both staged and unstaged changes, summarize the exact commit scope,
-and propose a concise message. Commit only after commit-specific approval for this task,
-including approval given in advance. Stage only task changes. If the index already has
-unrelated changes, changes overlap, or the task cannot be isolated safely, stop without
-altering the existing staging area. If no task changes remain, report that no commit is needed.
+and propose a concise message. Leave the index untouched until commit-specific approval
+for this task, including approval given in advance. After approval, stage only the final
+task scope and commit it. If the index already has unrelated changes, changes overlap,
+or the task cannot be isolated safely, stop without altering the existing staging area.
+If no task changes remain, report that no commit is needed.

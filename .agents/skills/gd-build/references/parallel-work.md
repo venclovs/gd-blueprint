@@ -29,11 +29,8 @@ Blocked -> Ready -> In progress -> Ready to integrate -> Integrated
 Exception transitions are explicit: a newly discovered unmet dependency or ownership
 conflict moves `Ready` or `In progress` to `Blocked`; a failed slice check returns the
 workstream to `In progress`; and a rejected `Ready to integrate` handoff returns to
-`In progress`. If combined verification exposes a defect in an `Integrated` workstream,
-the coordinator may reopen it with the correction recorded and its previous owner
-cleared: use `Ready` when its blockers remain integrated, or `Blocked` while an affected
-dependency is also being corrected. Only the coordinator may mark a workstream
-`Integrated`, after reviewing its scope and evidence.
+`In progress`. Only the coordinator may mark a workstream `Integrated`, after reviewing
+its scope and evidence.
 
 When resuming interrupted parallel work, first reconcile every indexed workstream's
 state, blockers, owner, workstream file, and current diff. Do not delegate or integrate
@@ -61,6 +58,12 @@ from stale task metadata.
   graph and ownership, then resume sequentially or with new scopes.
 - Workstream agents edit only their owned paths and workstream file. They do not change
   `TASK.md`, shared assets, architecture decisions, or initiative state.
+- Before live-Editor use, asset import, a Unity batch test, or a player build, the
+  coordinator confirms every project-file writer is paused with no write in flight, then
+  takes exclusive project access. Run one Unity operation at a time and keep writers
+  paused until it and any resulting import or refresh finish. If a live Editor remains
+  open, resume writes only after automatic refresh and import are verifiably suspended.
+  Workstream agents never run Unity operations against the shared project themselves.
 
 ## Integrate
 

@@ -6,21 +6,18 @@ do not turn a small concept into a large design document.
 
 ## Establish the design
 
-Record concise, decision-useful answers in `.gd-blueprint/PROJECT.md`:
+Complete only the decision-useful parts of `.gd-blueprint/PROJECT.md`. In particular,
+distinguish the three loop scales:
 
-- Player promise and fantasy: what the player gets to feel or become.
-- Audience, target platforms, and expected session length.
-- A few design pillars that resolve tradeoffs, plus explicit exclusions.
-- Core verbs and the meaningful choices behind them.
 - Moment-to-moment loop: perceive, decide, act, and receive feedback.
 - Session or run loop: pursue a goal, escalate, resolve, earn an outcome, and replay or
   exit.
 - Progression loop: what persists, unlocks, changes strategy, or demonstrates mastery.
-- Feedback and rewards, failure and recovery, and motivation to replay.
-- Smallest credible release, observable quality targets, and major design risks.
 
 Separate observations, developer decisions, assumptions, and unknowns. Do not invent
-detail merely to fill the template.
+detail merely to fill the template. A blank decision-bearing field is unresolved, not
+an implicit `None`; record `None` or `N/A` when absence is deliberate. Missing
+implementation is an observation, not evidence that a design choice is absent.
 
 ## Choose the greenfield Unity baseline
 
@@ -36,23 +33,16 @@ planning does not install the Editor, create the project, or add packages.
 For a new game, first decide whether external evidence would resolve an open decision or
 expose a meaningful risk. If so, run a short, cited research pass using at most three
 useful comparable games or technical precedents. If the concept is already bounded and
-has no research-dependent decision, record `No research needed` with a short reason
-instead of manufacturing a comparison. If the developer opts out or research access is
-unavailable when evidence is needed, record the resulting uncertainty instead of
-inventing findings. For an established game, research only when a new decision needs it.
-Prefer primary, current sources for technical claims; distinguish source facts from
-inferences.
+has no research-dependent decision, skip the research pass. If the developer opts out or
+research access is unavailable when evidence is needed, record the resulting uncertainty
+instead of inventing findings. For an established game, research only when a new decision
+needs it. Prefer primary, current sources for technical claims; distinguish source facts
+from inferences.
 
 For each comparable or precedent, capture the question it informs, the applicable
 lesson, and the resulting project decision or remaining uncertainty. Summarize those
 findings in `PROJECT.md` and record provenance in
-`.gd-blueprint/references/INDEX.md`.
-
-Keep research images and other reference-only media beside that index, outside Unity's
-`Assets` folder. Copy media only when it is user-provided, generated for the project, or
-its permitted use is clear; otherwise record a link and notes. The index records the
-title, creator or publisher, source URL, access date, relevance, rights or usage note,
-and local filename when one exists.
+`.gd-blueprint/references/INDEX.md`, following its media and provenance rules.
 
 ## Scout risky assumptions
 
@@ -65,22 +55,24 @@ Each scout records:
 
 - A stable scout ID that later tasks and findings can reference.
 - One question or falsifiable hypothesis.
+- The roadmap work or release-readiness decision it blocks.
+- Whether the developer approved it to run.
 - The cheapest useful prototype, research check, or playtest.
 - How the result will be evaluated.
 - The observed result, or `Pending` when it has not run.
 - A `Keep`, `Revise`, or `Discard` decision after evidence exists.
 - The prototype artifact disposition: `Removed` restores or deletes every scout-only
-  Unity-project change; `Isolated` retains executable artifacts only with a recorded,
-  verifiable compilation and build exclusion and no production references;
-  `Evidence only` retains notes, captures, or reference media but no executable Unity
-  artifact.
-  If isolation cannot be enforced and checked, leave the disposition pending until the
-  developer chooses `Removed` or `Evidence only`.
+  Unity-project change and keeps only the scout record; `Evidence only` additionally
+  retains non-executable captures or reference media. Neither disposition retains
+  executable prototype artifacts.
 
 When gameplay and presentation answer different questions, scout them separately.
 Prototype code is disposable evidence, not a production foundation or an implicit
 architecture choice. Put scouts before roadmap work that depends on them; record an
-explicitly accepted risk when the developer chooses not to resolve one first.
+explicitly accepted risk when the developer chooses not to resolve one first. Choose the
+artifact disposition before a scout becomes executable. If the developer accepts the
+risk without running its scout, remove the unrun scout and keep that decision in the
+risk record; a retained pending scout continues to block its recorded target.
 
 ## Make architecture an explicit decision
 
@@ -111,8 +103,9 @@ techniques; a deliberate hybrid is allowed when its ownership and boundaries are
 recorded. Record the developer's choice, rationale, boundaries, allowed secondary
 techniques, runtime-state ownership, and revisit triggers in `PROJECT.md`. Use `Selected`
 for a chosen preset, `Existing` for an established project, and `Declined` for an
-explicit choice of none. Leave it `Unresolved` or `Prototyping` while the decision still
-depends on evidence.
+explicit choice of none. Use `Prototyping` only when the developer has approved a
+recorded scout and it is the next executable work; otherwise leave an evidence-dependent
+choice `Unresolved`.
 
 For an existing project, inspect and describe the architecture actually in use. Preserve
 its Unity version, packages, conventions, and boundaries unless the developer explicitly

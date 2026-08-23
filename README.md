@@ -134,6 +134,10 @@ ScriptableObjects, package manifests, project settings, and shared assembly defi
 workstream agents treat them as read-only. Workstreams favor playable or testable
 vertical slices and use dependency-aware sequencing inspired by
 [Matt Pocock's ticket workflow](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-tickets).
+File edits may run in parallel. For Unity Editor, import, test, or build operations, the
+coordinator pauses project-file writers and keeps exclusive access through any resulting
+import or refresh. If the Editor remains open, automatic refresh and import stay
+suspended while writers are active.
 
 ## Unity and C# compatibility
 
