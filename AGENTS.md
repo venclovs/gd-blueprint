@@ -51,10 +51,12 @@ or invents architectures. Changing this contract requires a separately requested
   per-frame mediation. Unity-required public components are not cross-feature APIs.
   `Shared` owns no gameplay policy or global/session state.
 - Prefer concrete calls inside a feature. At a real polymorphic, feature, or platform
-  boundary, depend on the smallest capability used. The gameplay provider owns
-  cross-feature capabilities; the consumer owns platform ports. Signatures never expose
+  boundary, use the smallest interface for the capability consumed. The gameplay provider
+  owns cross-feature interfaces; the consumer owns platform ports. Signatures never expose
   concrete Unity adapters, authored assets, registries, or implementation collections.
-  Never add interface-per-class or Contracts assemblies.
+  At Inspector boundaries, adapters serialize a `Component`, resolve and validate the
+  interface during composition, and pass it inward. Never add interface-per-class or
+  Contracts assemblies.
 - Custom asmdefs never reference `Assembly-CSharp`; a Legacy bridge owns no gameplay.
   Keep `UnityEditor` out of runtime assemblies and preserve `.meta` files and GUIDs.
 
@@ -63,23 +65,26 @@ or invents architectures. Changing this contract requires a separately requested
 - Keep decisions, transitions, and gameplay-owned state in plain C#. MonoBehaviours only
   adapt serialization, composition, sensing/input, Unity lifecycle, movement, and
   presentation; never mirror Unity-owned state into the rules.
-- Use authored data for cohesive configuration when authoring or reuse adds value.
-  Validate once, copy to immutable runtime values, and keep per-agent/session state out of
-  ScriptableObjects.
-- Use typed producer-local events for discrete facts and pair subscriptions with their
-  lifetime. Queue conflicting stimuli and process them at an explicit step and total
-  order. Tick only continuous rules at an explicit cadence. No static events or event bus.
+- Put cohesive designer-authored configuration in feature-local ScriptableObjects when
+  authoring or reuse adds value. Validate once, copy to immutable runtime values, and keep
+  per-agent/session state out of those assets.
+- Use event-driven control for discrete facts with typed producer events instead of frame
+  polling. Subscribe and unsubscribe with the subscriber's lifetime. When several events
+  can affect one decision, process a frozen batch at an explicit step in a total order
+  defined by event data; callback and subscription order never decide output. Tick only
+  continuous or timed rules. No static events or event bus.
 - Use an injected feature/session registry only for real dynamic membership or repeated
   discovery. Define duplicate and lifetime behavior, snapshot valid members, then filter
   and rank with a total order ending in a stable unique domain ID. Never use registration
   order, `GetInstanceID`, a static registry, global manager, service locator, or broad
-  scene search as policy.
+  scene search for dependency resolution or selection.
 - Given the same validated configuration, ordered inputs/stimuli, time steps, and random
   state, plain rules produce the same decisions. Never read ambient `Time`, `Input`,
   `UnityEngine.Random`, unordered traversal, or Unity callback order as rule input. Pass
-  time, input, named random streams, and tie-breakers explicitly. When replay/save/load or
-  lockstep requires continuation, freeze the generator algorithm, stream derivation, draw
-  order, and serialized state. This does not promise cross-platform physics identity.
+  time, input, independently owned named random streams, and tie-breakers explicitly.
+  When replay/save/load or lockstep requires continuation, freeze the generator algorithm,
+  stream derivation, draw order, and serialized state. This does not promise
+  cross-platform physics identity.
 
 ## Unity
 

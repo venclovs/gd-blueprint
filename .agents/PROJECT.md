@@ -10,11 +10,3 @@
 ## Legacy transition
 
 - Status, adapter paths, bridged capability, and removal boundary: None.
-
-## Route deviations
-
-- Unity CLI, Pipeline, or playtest deviations: None.
-
-## Blockers
-
-- None.
