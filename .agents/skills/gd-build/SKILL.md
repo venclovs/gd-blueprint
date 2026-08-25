@@ -1,115 +1,103 @@
 ---
 name: gd-build
-description: Implement one Unity outcome under the fixed architecture and deterministic verification.
+description: Plan or implement one focused outcome using a fixed feature and assembly architecture, deterministic gameplay rules, and Unity CLI verification.
 ---
 
-# Build one Unity outcome
+# Plan or build one Unity outcome
 
-Use the installed `unity-cli` skill for Unity operations. The architecture below is fixed;
-changing it requires a separately requested migration.
+Use the installed `unity-cli` skill for Unity operations.
 
-## Establish the outcome
+Work on one observable outcome. Inspect the relevant source first and follow existing project
+conventions where this skill does not define them. The architecture below is fixed; changing it
+requires a separately requested migration.
 
-Implement one observable outcome from the current request after inspecting relevant source.
+## Plan mode
+
+In Codex Plan mode, inspect without modifying the project or calling mutating Unity commands.
+Return a concise implementation plan covering:
+
+- the outcome and acceptance criteria;
+- the owner, files, and asmdefs affected;
+- new or changed assembly edges;
+- relevant deterministic state, inputs, ordering, or randomness; and
+- required compile, test, and build evidence.
+
+Ask one targeted question only if ownership remains materially ambiguous after inspection. Never
+present planned verification as completed evidence.
 
 ## Architecture
 
-- Project-owned game code lives under `Assets/Game/`; packages, third-party code, and
-  generated code are outside this contract.
-- Place by first match: cross-feature startup -> `Bootstrap`; gameplay -> the existing
-  feature owning the changed state or invariant, otherwise the feature owning the changed
-  behavior's established output, otherwise one new feature named for the observable
-  capability; neutral runtime code with two named consumers -> `Shared`; Editor work
-  without a runtime feature owner -> `Tools`. Keep local code, tests, and assets with their
-  feature. Stop on ambiguous ownership. Technical roles are not features or assemblies.
-- Each runtime-bearing Feature, Bootstrap, and Shared has exactly one runtime asmdef and
-  at most one peer of each listed kind; no other project-owned assembly shapes are used.
-  Under `Assets/Game/`, `<Owner>` is `Features/<Feature>`, `Bootstrap`, or `Shared`;
-  `<Token>` is the corresponding PascalCase feature name, `Bootstrap`, or `Shared`:
+Project-owned game code lives under `Assets/Game/`. Packages, third-party code, and generated code
+are outside this contract.
 
-  ```text
-  <Owner>/Runtime/<Prefix>.<Token>.asmdef
-  <Owner>/Editor/<Prefix>.<Token>.Editor.asmdef
-  <Owner>/Tests/EditMode/<Prefix>.<Token>.EditModeTests.asmdef
-  <Owner>/Tests/PlayMode/<Prefix>.<Token>.PlayModeTests.asmdef
-  Features/<Feature>/Content/
-  Tools/Editor/<Prefix>.Tools.Editor.asmdef
-  Tools/Tests/EditMode/<Prefix>.Tools.EditModeTests.asmdef
-  ```
+Choose the owner by responsibility:
 
-  Each asmdef's root namespace equals its assembly name. Use the existing project-owned
-  asmdef prefix, or `Game` when none exists; stop if it is inconsistent. Keep C# out of
-  `Content/`. Test asmdefs carry the installed Test Framework marker. Editor and EditMode
-  assemblies are Editor-only; PlayMode tests never reference `UnityEditor`; production
-  never references tests.
-- New project asmdefs set `autoReferenced: false`. Change existing flags and references
-  only as required. Preserve the project's name-or-GUID style; use names when none exists
-  and never invent a GUID.
-- `A -> B` means A references B. Allowed project-owned runtime edges are
-  `Bootstrap -> Feature`, `Bootstrap -> Shared`, `Feature -> Shared`, and one-way
-  `consumer Feature -> provider Feature`. No project-owned runtime assembly references
-  Bootstrap, Shared references no feature, and cycles are forbidden. Bootstrap's own
-  Editor/tests and other Editor/test asmdefs have project-owned edges only to code they
-  directly extend or verify. Never add a coordination layer to bypass the graph.
-- Types are internal by default. Make only Unity-attachable types and real cross-assembly
-  APIs public; use exact test-assembly internals access rather than widening an API for
-  tests. Compose inside a feature; use Bootstrap only for cross-feature startup, never
-  per-frame mediation. Unity-required public components are not cross-feature APIs.
-  `Shared` owns no gameplay policy or global/session state.
-- Prefer concrete calls inside a feature. At a real polymorphic, feature, or platform
-  boundary, use the smallest interface for the capability consumed. The gameplay provider
-  owns cross-feature interfaces; the consumer owns platform ports. Signatures never expose
-  concrete Unity adapters, authored assets, or mutable implementation collections.
-  At Inspector boundaries, adapters serialize a `Component`, resolve and validate the
-  interface during composition, and pass it inward. Never add interface-per-class or
-  Contracts assemblies.
-- Custom asmdefs never reference `Assembly-CSharp`. Keep `UnityEditor` out of runtime
-  assemblies, preserve `.meta` files and GUIDs, and never hand-edit Unity YAML.
+- `Bootstrap`: cross-feature startup only.
+- `Features/<Feature>`: gameplay owned by an existing feature; otherwise create one feature named
+  for the observable capability.
+- `Shared`: neutral runtime code used by at least two features. It owns no gameplay policy or
+  global/session state.
+- `Tools`: Editor-only work with no runtime feature owner.
 
-## Deterministic code
+Keep a feature's code, tests, assets, and configuration together. Technical roles are not features.
 
-- Keep decisions, transitions, and gameplay-owned state in plain C#. MonoBehaviours adapt
-  serialization, composition, sensing/input, Unity lifecycle, movement, and presentation.
-  Sample Unity-owned state into explicit immutable rule inputs; never maintain a second
-  authoritative copy in the rules.
-- Put cohesive designer-authored configuration in feature-local ScriptableObjects when
-  authoring or reuse adds value. Validate once, copy to immutable runtime values, and keep
-  per-agent/session state out of those assets.
-- Use event-driven control for discrete facts with typed producer events instead of frame
-  polling. Subscribe and unsubscribe with the subscriber's lifetime. When several events
-  affect one decision, process a frozen batch at an explicit step. Resolve it independently
-  of order or sort by simulation step, validated globally unique source ID, and a unique
-  deterministic per-source sequence; callback and subscription order never decide output.
-  Tick only continuous or timed rules. No static events or event bus.
-- Use an injected feature/session registry only for real dynamic membership or repeated
-  discovery. At each decision step, rules consume frozen membership directly or through a
-  read-only query over that snapshot. Define duplicate and lifetime behavior, then filter and
-  rank with a total order ending in a validated stable domain ID from authored or
-  deterministically persisted spawn data. Never use registration order, `GetInstanceID`,
-  runtime-random IDs, a static registry, global manager, service locator, or broad scene
-  search for dependency resolution or selection.
-- Given the same validated configuration, initial gameplay state, ordered inputs/stimuli,
-  time steps, and random state, plain rules produce the same decisions. Never read ambient
-  `Time`, `Input`, `UnityEngine.Random`, unordered traversal, or Unity callback order as rule
-  input. Pass time, input, independently owned named random streams, and tie-breakers
-  explicitly. When replay/save/load or lockstep requires continuation, serialize all
-  gameplay-owned state and pending deterministic inputs; freeze the generator algorithm,
-  stream derivation, draw order, and state. Cross-platform numeric and physics identity
-  require separately scoped deterministic primitives.
+A runtime-bearing owner has one runtime asmdef and at most one matching Editor, EditMode test, and
+PlayMode test asmdef:
+
+```text
+<Owner>/Runtime/<Prefix>.<Token>.asmdef
+<Owner>/Editor/<Prefix>.<Token>.Editor.asmdef
+<Owner>/Tests/EditMode/<Prefix>.<Token>.EditModeTests.asmdef
+<Owner>/Tests/PlayMode/<Prefix>.<Token>.PlayModeTests.asmdef
+Features/<Feature>/Content/
+Tools/Editor/<Prefix>.Tools.Editor.asmdef
+Tools/Tests/EditMode/<Prefix>.Tools.EditModeTests.asmdef
+```
+
+- Match the existing project-owned prefix and reference style; use `Game` if none exists. Report
+  inconsistent prefixes instead of guessing.
+- Set each asmdef's root namespace to its assembly name and new asmdefs to
+  `autoReferenced: false`. Match an existing test asmdef; if none exists, inspect one created by
+  the installed Test Framework.
+- Allowed runtime edges are `Bootstrap -> Feature`, `Bootstrap -> Shared`, `Feature -> Shared`, and
+  one-way `consumer Feature -> provider Feature`. No cycles; no project-owned runtime assembly
+  references `Bootstrap`; `Shared` references no feature.
+- Editor and test assemblies reference only the code they extend or test. Production never
+  references tests; PlayMode tests and runtime assemblies never reference `UnityEditor`.
+- Types are internal by default. Make only Unity-attachable types and genuine cross-assembly APIs
+  public. Use interfaces only at real feature, platform, or polymorphic boundaries. For Inspector
+  wiring, serialize a `Component`, validate its interface during composition, and pass the
+  interface inward.
+- Never reference `Assembly-CSharp`, add a Contracts assembly or service locator, or hand-edit
+  Unity YAML. Keep C# out of `Content/`, and preserve `.meta` files and GUIDs.
+
+## Deterministic gameplay
+
+- Keep gameplay decisions and owned state in plain C#. MonoBehaviours adapt Unity lifecycle,
+  serialization, input, sensing, movement, and presentation.
+- Put reusable designer-authored values in feature-local ScriptableObjects. Validate them and copy
+  them into immutable runtime configuration; keep runtime state out of those assets.
+- The same validated configuration, initial state, ordered inputs, time steps, and random state
+  must produce the same decisions.
+- Pass time, input, random streams, stable IDs, and tie-breakers explicitly. Rules must not depend
+  on `Time`, `Input`, `UnityEngine.Random`, `GetInstanceID`, callback or registration order, or
+  unordered traversal.
+- Use typed events for discrete facts and ticking only for continuous or timed behavior. Subscribe
+  and unsubscribe with the subscriber's lifetime.
+- For dynamic scene membership, use a generic registry with explicit register/unregister lifetime
+  instead of scene searches. If it is static, clear it between sessions and tests. Keep selection
+  deterministic; do not use the registry as a general service locator.
+- Serialize gameplay and random state only when save/load, replay, or lockstep continuation is in
+  scope.
 
 ## Verify
 
-Compare changed code and asmdefs with the requested outcome and validate the dependency graph.
-Required evidence, when applicable:
+Use Unity CLI and the connected Editor to verify proportionally:
 
-1. Import and compilation.
-2. EditMode tests for plain rules.
-3. PlayMode tests for Unity integration.
-4. A player build when required.
+1. Verify imports; after C# or asmdef changes, compile and check Console errors.
+2. Run EditMode tests for changed plain rules or deterministic state.
+3. Run PlayMode tests for changed Unity composition, serialization, or lifecycle behavior.
+4. Build a player when requested or when build/platform behavior changes.
 
-Match determinism tests to the change: replay identical configuration, inputs, and seed
-for randomness; vary callback and subscription order for the same decision stimuli; vary
-registration order and equal-score ties for registries. PlayMode tests cover composed
-enable/disable/destroy teardown when Unity lifetime behavior changed. When save/load or
-lockstep continuation is in scope, test continuation from serialized gameplay and random
-state.
+When relevant, test repeated runs with the same seed and inputs, plus alternate event,
+registration, and equal-score ordering.
