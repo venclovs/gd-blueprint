@@ -1,73 +1,88 @@
 # GD Blueprint
 
-Read `.gd-blueprint/PROJECT.md` and `.gd-blueprint/TASK.md` before editing the
-Unity project.
+Before changing the Unity project, read `.agents/PROJECT.md`, `.agents/TASK.md`, and
+relevant source. Use `gd-build`; if unavailable, read
+`.agents/skills/gd-build/SKILL.md`.
 
-## Document ownership
+The script architecture is already selected. Ordinary game work never compares, chooses,
+or invents architectures. Changing this contract requires a separately requested migration.
 
-- `.gd-blueprint/PROJECT.md` owns game direction, design findings, Unity context,
-  architecture, project conventions, release scope, and roadmap.
-- `.gd-blueprint/TASK.md` owns the single active initiative, integration notes, and
-  verification evidence.
-- `.gd-blueprint/references/INDEX.md` owns research and reference-media provenance.
-- `.gd-blueprint/tasks/*.md` are temporary workstream records created only when parallel
-  work helps. The coordinator removes them after consolidating their evidence and before
-  closing the task.
+## Architecture contract
 
-Follow the architecture and conventions recorded in `.gd-blueprint/PROJECT.md`;
-existing project patterns take precedence over template defaults. Do not migrate an
-established project or introduce packages, analyzers, or scaffolding unless the task
-explicitly requires it.
+- Project-owned game code lives under `Assets/Game/`; packages, third-party code,
+  generated code, and untouched legacy code are outside this contract.
+- Place by first match: recorded bridge -> `Legacy`; cross-feature startup -> `Bootstrap`;
+  gameplay -> the feature owning its state, invariant, or output, or one new observable
+  capability feature; neutral runtime code with two named consumers -> `Shared`;
+  project-wide Editor work -> `Tools`. Keep local code, tests, and assets with their
+  feature. Stop on ambiguous ownership. Technical roles are not features or assemblies.
+- Each runtime-bearing Feature, Bootstrap, and Shared has exactly one runtime asmdef and
+  at most one peer of each listed kind; no other project-owned assembly shapes are used.
+  `<Owner>` is its folder and `<Token>` its PascalCase name:
 
-## Task states
+  ```text
+  <Owner>/Runtime/<Prefix>.<Token>.asmdef
+  <Owner>/Editor/<Prefix>.<Token>.Editor.asmdef
+  <Owner>/Tests/EditMode/<Prefix>.<Token>.EditModeTests.asmdef
+  <Owner>/Tests/PlayMode/<Prefix>.<Token>.PlayModeTests.asmdef
+  Features/<Feature>/Content/
+  Tools/Editor/<Prefix>.Tools.Editor.asmdef
+  Tools/Tests/EditMode/<Prefix>.Tools.EditModeTests.asmdef
+  ```
 
-`Idle -> In progress -> Ready to verify -> Done`
+  Each asmdef's root namespace equals its assembly name. `PROJECT.md` owns the prefix
+  before the first asmdef and defaults to `Game`; source owns it afterward. Keep C# out of
+  `Content/`. Test asmdefs carry the installed Test Framework marker. Editor and EditMode
+  assemblies are Editor-only; PlayMode tests never reference `UnityEditor`; production
+  never references tests.
+- New project asmdefs set `autoReferenced: false`. Freeze complete touched flags and
+  references. Preserve the project's name-or-GUID style; use names when none exists and
+  never invent a GUID. A true `autoReferenced` value is allowed only as a recorded Legacy
+  bridge edge.
+- `A -> B` means A references B. Allowed project-owned runtime edges are
+  `Bootstrap -> Feature`, `Bootstrap -> Shared`, `Feature -> Shared`, and one-way
+  `consumer Feature -> provider Feature`. No project-owned runtime assembly references
+  Bootstrap, Shared references no feature, and cycles are forbidden. Bootstrap's own
+  Editor/tests and other Editor/test asmdefs reference only the project code they directly
+  extend or verify. Never add a coordination layer to bypass the graph.
+- Types are internal by default. Make only Unity-attachable types and real cross-assembly
+  APIs public; use exact test-assembly internals access rather than widening an API for
+  tests. Compose inside a feature; use Bootstrap only for cross-feature startup, never
+  per-frame mediation. Unity-required public components are not cross-feature APIs.
+  `Shared` owns no gameplay policy or global/session state.
+- Prefer concrete calls inside a feature. At a real polymorphic, feature, or platform
+  boundary, depend on the smallest capability used. The gameplay provider owns
+  cross-feature capabilities; the consumer owns platform ports. Signatures never expose
+  concrete Unity adapters, authored assets, registries, or implementation collections.
+  Never add interface-per-class or Contracts assemblies.
+- Custom asmdefs never reference `Assembly-CSharp`; a Legacy bridge owns no gameplay.
+  Keep `UnityEditor` out of runtime assemblies and preserve `.meta` files and GUIDs.
 
-- `$gd-plan` updates project direction and decisions without editing the Unity project.
-- `$gd-build` scopes, implements, verifies, and offers to commit the active task.
-- Failed verification returns to `In progress`; an unavailable required check remains
-  `Ready to verify` and is a blocker.
-- Start new work from `Idle` or a handled `Done`. Abandon unfinished work only with
-  explicit direction about its changes.
+## Deterministic code
 
-## Parallel work
+- Keep decisions, transitions, and gameplay-owned state in plain C#. MonoBehaviours only
+  adapt serialization, composition, sensing/input, Unity lifecycle, movement, and
+  presentation; never mirror Unity-owned state into the rules.
+- Use authored data for cohesive configuration when authoring or reuse adds value.
+  Validate once, copy to immutable runtime values, and keep per-agent/session state out of
+  ScriptableObjects.
+- Use typed producer-local events for discrete facts and pair subscriptions with their
+  lifetime. Queue conflicting stimuli and process them at an explicit step and total
+  order. Tick only continuous rules at an explicit cadence. No static events or event bus.
+- Use an injected feature/session registry only for real dynamic membership or repeated
+  discovery. Define duplicate and lifetime behavior, snapshot valid members, then filter
+  and rank with a total order ending in a stable unique domain ID. Never use registration
+  order, `GetInstanceID`, a static registry, global manager, service locator, or broad
+  scene search as policy.
+- Given the same validated configuration, ordered inputs/stimuli, time steps, and random
+  state, plain rules produce the same decisions. Never read ambient `Time`, `Input`,
+  `UnityEngine.Random`, unordered traversal, or Unity callback order as rule input. Pass
+  time, input, named random streams, and tie-breakers explicitly. When replay/save/load or
+  lockstep requires continuation, freeze the generator algorithm, stream derivation, draw
+  order, and serialized state. This does not promise cross-platform physics identity.
 
-- Only the coordinator updates `.gd-blueprint/TASK.md`, shared paths, integration state,
-  or the final initiative state.
-- Delegate only unblocked workstreams with disjoint write ownership.
-- Prefer independently playable or testable slices over architecture-layer splits.
-- Never assign concurrent edits to the same scene, prefab, material, ScriptableObject,
-  package manifest, project setting, or shared assembly definition.
-- Keep shared serialized assets and project-wide configuration coordinator-owned, and
-  review their diffs before verification.
-- Before a coordinator-owned Unity Editor, import, test, or build operation, confirm all
-  project-file writers are paused; keep them paused through its resulting import or
-  refresh. If the Editor stays open, resume writes only while its automatic refresh and
-  import are verifiably suspended.
+## Unity
 
-## Unity safeguards
-
-- Keep each asset with its `.meta` file and preserve GUIDs when moving or replacing it.
-- Prefer Unity-aware moves for scenes, prefabs, materials, animations, and other
-  serialized assets.
-- Review serialized diffs for lost references, unexpected overrides, and broad
-  reserialization.
-- Never edit generated folders such as `Library`, `Temp`, `Logs`, `obj`, or build output.
-- Keep runtime assemblies free of `UnityEditor`; put editor tooling in an `Editor` folder
-  or editor-only assembly.
-- Match the project's pinned Unity version, packages, render pipeline, input system,
-  supported C# features, and code style.
-
-## Evidence and Git
-
-Use checks appropriate to the change: Unity compilation, EditMode or PlayMode tests, a
-player build, serialized-asset inspection, and a focused manual play check. Record what
-actually ran in `.gd-blueprint/TASK.md`; mark irrelevant checks `N/A` with a reason. A
-required but unavailable check is not a pass.
-
-For a scout, reconcile `.gd-blueprint/PROJECT.md` and retained-evidence provenance
-through `$gd-plan` before the commit handoff. After `Done`, inspect staged and unstaged
-changes, summarize the exact scope, and propose a concise commit message. Leave the index
-untouched until commit-specific approval for the current task, then stage only its final
-scope. If unrelated staged changes or overlaps prevent safe isolation, leave the index
-untouched and stop.
+Use the official `unity` CLI for import, compilation, tests, and builds; use Pipeline for
+serialized Editor work. Installed help and the discovered catalog define syntax. Never
+hand-edit Unity YAML.
