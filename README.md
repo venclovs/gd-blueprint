@@ -5,18 +5,11 @@ boundaries, and deterministic verification.
 
 ## Install
 
-Copy these paths from a pinned release into the Unity project root:
+For a new Unity project, copy `.agents/skills/gd-build/` from a pinned release to
+`<project>/.agents/skills/gd-build/`, then invoke:
 
-```text
-.agents/
-AGENTS.md
-```
-
-Merge existing agent files. Nothing is added to `Assets/`, and no installer or Git setup
-runs. Start the agent at the project root:
-
-> Use `gd-build` to create {concept}. Done means {observable behavior}.
+> Use `$gd-build` to create {concept}. Done means {observable behavior}.
 
 ## License
 
-[MIT License](LICENSE.md).
+[MIT License](LICENSE).
