@@ -1,103 +1,92 @@
 ---
 name: gd-build
-description: Plan or implement one focused outcome using a fixed feature and assembly architecture, deterministic gameplay rules, and Unity CLI verification.
+description: Plan or implement one focused Unity outcome while keeping multiple agents inside one director-owned architecture.
 ---
 
-# Plan or build one Unity outcome
+# Build within one Unity architecture
 
-Use the installed `unity-cli` skill for Unity operations.
+Use `unity-cli` for Unity operations.
 
-Work on one observable outcome. Inspect the relevant source first and follow existing project
-conventions where this skill does not define them. The architecture below is fixed; changing it
-requires a separately requested migration.
+One human director owns the architecture lock. Each agent implements one director-defined outcome
+within its declared write set.
 
-## Plan mode
+## Lock the architecture
 
-In Codex Plan mode, inspect without modifying the project or calling mutating Unity commands.
-Return a concise implementation plan covering:
+Use an existing project architecture file. If none exists, the agent initializing the project
+creates a populated `ARCHITECTURE.md` in the Unity project root. It records the game flow and five
+points below. All agents read it before editing. Update it only when the flow or an architecture
+decision changes, with one agent editing it at a time.
 
-- the outcome and acceptance criteria;
-- the owner, files, and asmdefs affected;
-- new or changed assembly edges;
-- relevant deterministic state, inputs, ordering, or randomness; and
-- required compile, test, and build evidence.
+Before editing, state the outcome, owner, exact write set, convention source, choices for the five
+numbered points below, and verification. Resolve each choice in this order: director constraint;
+repository instruction or named example; same-owner pattern; project-owned example with the same
+role and artifact kind; fallback below. Do not use packages, third-party code, or generated code as
+convention sources. If sources conflict, ask one targeted question instead of blending them.
 
-Ask one targeted question only if ownership remains materially ambiguous after inspection. Never
-present planned verification as completed evidence.
+## 1. Owner and feature boundaries
 
-## Architecture
+Fallback:
 
-Project-owned game code lives under `Assets/Game/`. Packages, third-party code, and generated code
-are outside this contract.
+- `Features/<Feature>`: a vertical slice owning its code, content, and tests.
+- `Bootstrap`: cross-feature startup and wiring only.
+- `Shared`: cross-owner runtime code already used by at least two owners; no feature-specific
+  behavior or mutable feature state.
+- `Tools`: Editor-only work.
 
-Choose the owner by responsibility:
+If a new owner or cross-owner API is required, ask the director to approve it and assign its writer.
 
-- `Bootstrap`: cross-feature startup only.
-- `Features/<Feature>`: gameplay owned by an existing feature; otherwise create one feature named
-  for the observable capability.
-- `Shared`: neutral runtime code used by at least two features. It owns no gameplay policy or
-  global/session state.
-- `Tools`: Editor-only work with no runtime feature owner.
+Each path has one active writer. The write set names cross-owner APIs, shared assets, `Bootstrap`,
+`Shared`, `Packages`, and `ProjectSettings`. The director serializes overlaps and Unity import,
+compile, test, and build operations.
 
-Keep a feature's code, tests, assets, and configuration together. Technical roles are not features.
+## 2. Folder and asmdef layout
 
-A runtime-bearing owner has one runtime asmdef and at most one matching Editor, EditMode test, and
-PlayMode test asmdef:
+With no project pattern, use this layout under `Assets/Game/`:
 
 ```text
-<Owner>/Runtime/<Prefix>.<Token>.asmdef
-<Owner>/Editor/<Prefix>.<Token>.Editor.asmdef
-<Owner>/Tests/EditMode/<Prefix>.<Token>.EditModeTests.asmdef
-<Owner>/Tests/PlayMode/<Prefix>.<Token>.PlayModeTests.asmdef
+Bootstrap/Runtime/Game.Bootstrap.asmdef
+Features/<Feature>/Runtime/Game.<Feature>.asmdef
 Features/<Feature>/Content/
-Tools/Editor/<Prefix>.Tools.Editor.asmdef
-Tools/Tests/EditMode/<Prefix>.Tools.EditModeTests.asmdef
+Features/<Feature>/Editor/Game.<Feature>.Editor.asmdef
+Features/<Feature>/Tests/EditMode/Game.<Feature>.EditModeTests.asmdef
+Features/<Feature>/Tests/PlayMode/Game.<Feature>.PlayModeTests.asmdef
+Shared/Runtime/Game.Shared.asmdef
+Tools/Editor/Game.Tools.Editor.asmdef
 ```
 
-- Match the existing project-owned prefix and reference style; use `Game` if none exists. Report
-  inconsistent prefixes instead of guessing.
-- Set each asmdef's root namespace to its assembly name and new asmdefs to
-  `autoReferenced: false`. Match an existing test asmdef; if none exists, inspect one created by
-  the installed Test Framework.
-- Allowed runtime edges are `Bootstrap -> Feature`, `Bootstrap -> Shared`, `Feature -> Shared`, and
-  one-way `consumer Feature -> provider Feature`. No cycles; no project-owned runtime assembly
-  references `Bootstrap`; `Shared` references no feature.
-- Editor and test assemblies reference only the code they extend or test. Production never
-  references tests; PlayMode tests and runtime assemblies never reference `UnityEditor`.
-- Types are internal by default. Make only Unity-attachable types and genuine cross-assembly APIs
-  public. Use interfaces only at real feature, platform, or polymorphic boundaries. For Inspector
-  wiring, serialize a `Component`, validate its interface during composition, and pass the
-  interface inward.
-- Never reference `Assembly-CSharp`, add a Contracts assembly or service locator, or hand-edit
-  Unity YAML. Keep C# out of `Content/`, and preserve `.meta` files and GUIDs.
+Create only needed paths. Each runtime owner gets one runtime asmdef; extra assemblies require a
+director decision or established project pattern.
 
-## Deterministic gameplay
+## 3. Namespace and naming conventions
 
-- Keep gameplay decisions and owned state in plain C#. MonoBehaviours adapt Unity lifecycle,
-  serialization, input, sensing, movement, and presentation.
-- Put reusable designer-authored values in feature-local ScriptableObjects. Validate them and copy
-  them into immutable runtime configuration; keep runtime state out of those assets.
-- The same validated configuration, initial state, ordered inputs, time steps, and random state
-  must produce the same decisions.
-- Pass time, input, random streams, stable IDs, and tie-breakers explicitly. Rules must not depend
-  on `Time`, `Input`, `UnityEngine.Random`, `GetInstanceID`, callback or registration order, or
-  unordered traversal.
-- Use typed events for discrete facts and ticking only for continuous or timed behavior. Subscribe
-  and unsubscribe with the subscriber's lifetime.
-- For dynamic scene membership, use a generic registry with explicit register/unregister lifetime
-  instead of scene searches. If it is static, clear it between sessions and tests. Keep selection
-  deterministic; do not use the registry as a general service locator.
-- Serialize gameplay and random state only when save/load, replay, or lockstep continuation is in
-  scope.
+Fallback: prefix `Game`; root namespace equals the full assembly name; reference asmdefs by assembly
+name; set `autoReferenced: false`. Use the director-named PascalCase capability or responsibility.
+
+## 4. Composition, configuration, communication, and dependency wiring
+
+Allowed runtime edges are `Bootstrap -> Feature|Shared`, `Feature -> Shared`, and one-way
+consumer-feature to provider-feature. Allow no other runtime edges, cycles, or `Assembly-CSharp`
+references.
+
+Follow director-selected or established wiring. Otherwise use serialized fields for scene objects,
+initialization for runtime-created Unity objects, and constructors for plain C# types.
+
+Within an owner, concrete references are valid. Across owners, consume a narrow provider-owned API:
+concrete when one implementation suffices, an interface when implementations vary, direct calls for
+commands and queries, and provider-owned C# events for notifications. Add no second wiring or
+messaging mechanism.
+
+Follow project configuration; otherwise keep configuration owner-local. Expose only
+Unity-attachable types and provider APIs required by other assemblies.
+
+## 5. Test organization and reference style
+
+Tests stay with their owner: EditMode when lifecycle or scene execution is unnecessary; PlayMode for
+lifecycle, serialization, or composition. Cross-feature tests belong to the consumer; startup tests
+to `Bootstrap`. Create test asmdefs only when tests exist and reference only the owner and exercised
+providers. Production never references tests; runtime and PlayMode never reference `UnityEditor`.
 
 ## Verify
 
-Use Unity CLI and the connected Editor to verify proportionally:
-
-1. Verify imports; after C# or asmdef changes, compile and check Console errors.
-2. Run EditMode tests for changed plain rules or deterministic state.
-3. Run PlayMode tests for changed Unity composition, serialization, or lifecycle behavior.
-4. Build a player when requested or when build/platform behavior changes.
-
-When relevant, test repeated runs with the same seed and inputs, plus alternate event,
-registration, and equal-score ordering.
+Run locked verification. After integration, the assigned owner compiles the combined project,
+inspects errors, and reruns affected tests and smoke checks.
