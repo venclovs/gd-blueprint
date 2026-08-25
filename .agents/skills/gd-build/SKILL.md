@@ -1,6 +1,6 @@
 ---
 name: gd-build
-description: Implement or resume one Unity outcome under the fixed architecture with deterministic Unity CLI and Pipeline verification.
+description: Implement or resume one Unity outcome under the fixed architecture and deterministic verification.
 ---
 
 # Build one Unity outcome
@@ -11,7 +11,7 @@ Read `AGENTS.md`; it owns architecture and determinism. This skill owns the proc
 
 Resume the active task or start from `Idle`. Record one observable outcome, scope,
 architecture delta, and checks in `.agents/TASK.md`. Update `.agents/PROJECT.md` only for
-the initial prefix or a durable architecture exception.
+durable intent, the initial prefix, or a bounded Legacy transition.
 
 ## Implement
 
@@ -19,8 +19,8 @@ Implement under the recorded architecture delta and `AGENTS.md`.
 
 ## Verify
 
-Compare changed code and asmdefs with `.agents/TASK.md`, validate the dependency graph,
-then run:
+Compare changed code and asmdefs with `.agents/TASK.md` and validate the dependency graph.
+Required evidence, when applicable:
 
 1. Import and compilation.
 2. EditMode tests for plain rules.
