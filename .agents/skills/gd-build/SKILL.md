@@ -14,14 +14,14 @@ Implement one observable outcome from the current request after inspecting relev
 
 ## Architecture
 
-- Project-owned game code lives under `Assets/Game/`; packages, third-party code,
-  generated code, and untouched legacy code are outside this contract.
+- Project-owned game code lives under `Assets/Game/`; packages, third-party code, and
+  generated code are outside this contract.
 - Place by first match: cross-feature startup -> `Bootstrap`; gameplay -> the existing
   feature owning the changed state or invariant, otherwise the feature owning the changed
   behavior's established output, otherwise one new feature named for the observable
-  capability; neutral runtime code with two named consumers -> `Shared`; project-wide
-  Editor work -> `Tools`. Keep local code, tests, and assets with their feature. Stop on
-  ambiguous ownership. Technical roles are not features or assemblies.
+  capability; neutral runtime code with two named consumers -> `Shared`; Editor work
+  without a runtime feature owner -> `Tools`. Keep local code, tests, and assets with their
+  feature. Stop on ambiguous ownership. Technical roles are not features or assemblies.
 - Each runtime-bearing Feature, Bootstrap, and Shared has exactly one runtime asmdef and
   at most one peer of each listed kind; no other project-owned assembly shapes are used.
   Under `Assets/Game/`, `<Owner>` is `Features/<Feature>`, `Bootstrap`, or `Shared`;
@@ -78,9 +78,9 @@ Implement one observable outcome from the current request after inspecting relev
 - Use event-driven control for discrete facts with typed producer events instead of frame
   polling. Subscribe and unsubscribe with the subscriber's lifetime. When several events
   affect one decision, process a frozen batch at an explicit step. Resolve it independently
-  of order or sort by simulation step, stable domain ID, and a unique deterministic
-  per-source sequence; callback and subscription order never decide output. Tick only
-  continuous or timed rules. No static events or event bus.
+  of order or sort by simulation step, validated globally unique source ID, and a unique
+  deterministic per-source sequence; callback and subscription order never decide output.
+  Tick only continuous or timed rules. No static events or event bus.
 - Use an injected feature/session registry only for real dynamic membership or repeated
   discovery. At each decision step, rules consume frozen membership directly or through a
   read-only query over that snapshot. Define duplicate and lifetime behavior, then filter and
@@ -88,13 +88,14 @@ Implement one observable outcome from the current request after inspecting relev
   deterministically persisted spawn data. Never use registration order, `GetInstanceID`,
   runtime-random IDs, a static registry, global manager, service locator, or broad scene
   search for dependency resolution or selection.
-- Given the same validated configuration, ordered inputs/stimuli, time steps, and random
-  state, plain rules produce the same decisions. Never read ambient `Time`, `Input`,
-  `UnityEngine.Random`, unordered traversal, or Unity callback order as rule input. Pass
-  time, input, independently owned named random streams, and tie-breakers explicitly.
-  When replay/save/load or lockstep requires continuation, freeze the generator algorithm,
-  stream derivation, draw order, and serialized state. This does not promise
-  cross-platform physics identity.
+- Given the same validated configuration, initial gameplay state, ordered inputs/stimuli,
+  time steps, and random state, plain rules produce the same decisions. Never read ambient
+  `Time`, `Input`, `UnityEngine.Random`, unordered traversal, or Unity callback order as rule
+  input. Pass time, input, independently owned named random streams, and tie-breakers
+  explicitly. When replay/save/load or lockstep requires continuation, serialize all
+  gameplay-owned state and pending deterministic inputs; freeze the generator algorithm,
+  stream derivation, draw order, and state. Cross-platform numeric and physics identity
+  require separately scoped deterministic primitives.
 
 ## Verify
 
@@ -110,4 +111,5 @@ Match determinism tests to the change: replay identical configuration, inputs, a
 for randomness; vary callback and subscription order for the same decision stimuli; vary
 registration order and equal-score ties for registries. PlayMode tests cover composed
 enable/disable/destroy teardown when Unity lifetime behavior changed. When save/load or
-lockstep continuation is in scope, test continuation from serialized random state.
+lockstep continuation is in scope, test continuation from serialized gameplay and random
+state.

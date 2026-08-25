@@ -5,7 +5,7 @@ boundaries, and deterministic verification.
 
 ## Install
 
-For a new Unity project, copy `.agents/skills/gd-build/` from a pinned release to
+For a new Unity project, copy `.agents/skills/gd-build/` to
 `<project>/.agents/skills/gd-build/`, then invoke:
 
 > Use `$gd-build` to create {concept}. Done means {observable behavior}.
